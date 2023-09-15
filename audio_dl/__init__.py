@@ -1,32 +1,25 @@
 from __future__ import unicode_literals
 import youtube_dl
 import os
-import datetime
-from .rename import rename_all_files
+from time import strftime, localtime
+from .reformat import convert_files
 
 def start():
     valid_formats = ["m4a", "mp4", "mp3", "ogg", "wav", "webm"]
+    out = os.open("./audio_dl/output", os.O_RDONLY)
     while True:
-        fmt = str(input("Select format: (--list for options)\n"))
-        if fmt == "--list":
-            print("Options:")
-            for i in valid_formats:
-                print(f"- {i}")
-        elif any(fmt in valid_formats for fmt in valid_formats):
-            print(f"Selected format: {fmt}")
+        fmt = input(f"Valid formats: {valid_formats}\nFormat: ")
+        if fmt in valid_formats:
             break
         else:
-            print("Select a valid format. --list for options.")
+            print("Please select a valid format.")
 
-    now = datetime.datetime.now().strftime("%Y%m%d_%H%m%s")
-
-    output_dir = f"./output/{now}"
-    os.mkdir(output_dir)
-    output_dir = os.path.abspath(output_dir) 
+    time = strftime("%Y%M%D-$H$M$S", localtime())
+    output_dir = os.mkdir(f"{time}", dir_fd=out)
 
     ydl_opts = {
             "format": f"bestaudio[ext={fmt}]/bestaudio/m4a",
-            "outtmpl": os.path.join(output_dir, f"%(title)s.%(ext)s"),
+            "outtmpl": output_dir,
             "postprocessors": [{
                 "key": "FFmpegExtractAudio",
                 "preferredquality": "192",
@@ -34,18 +27,24 @@ def start():
             }
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        url = str(input("Paste playlist:\n"))
-        try:
-            ydl.download((url,))
-            files = os.listdir(output_dir)
-            for file in files:
-                ext = file.split('.')[1]
-                print(f"Extension: {ext}")
-                if ext != fmt:
-                    rename_all_files(output_dir=output_dir, fmt=fmt, incorrect_filetype=True)
-                else:
-                    rename_all_files(output_dir=output_dir, fmt=fmt, incorrect_filetype=False)
-        except youtube_dl.DownloadError:
-            print("Something went wrong. Try again.")
+        url = str(input("Paste playlist: "))
+        ydl.download((url,))
 
+    files = os.listdir(out)
+    print(files)
 
+    for file in files:
+        invalid_files = []
+
+        old_name = file.strip().lower().split(' ')
+        new_name = '_'.join(old_name)
+        os.rename(file, new_name)
+
+        ext = file.split(".")[-1]
+        if ext in valid_formats and ext == fmt:
+            pass
+        else:
+            invalid_files.append(file)
+
+        if invalid_files:
+            convert_files(invalid_files)
