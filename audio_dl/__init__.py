@@ -1,10 +1,10 @@
 from __future__ import unicode_literals
 import youtube_dl
-from handlers import get_output, rename_files
+from .handlers import get_output, rename_files
 
 def start():
     valid_formats = ["m4a", "mp4", "mp3", "ogg", "wav", "webm"]
-    output = get_output(timeout=0)
+    output = get_output()
     while True:
         fmt = input(f"Valid formats: {valid_formats}\nFormat: ")
         if fmt in valid_formats:
