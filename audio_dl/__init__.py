@@ -4,9 +4,18 @@ import os
 from time import strftime, localtime
 from .reformat import convert_files
 
+def rename(files, out):
+    for file in files:
+        old_name = file.strip().lower().split(' ')
+        new_name = '_'.join(old_name)
+        os.rename(file, new_name)
+    return os.listdir(out)
+
+
 def start():
     valid_formats = ["m4a", "mp4", "mp3", "ogg", "wav", "webm"]
-    out = os.open("./audio_dl/output", os.O_RDONLY)
+    out = os.open("./output", os.O_RDONLY)
+    print(out)
     while True:
         fmt = input(f"Valid formats: {valid_formats}\nFormat: ")
         if fmt in valid_formats:
@@ -30,16 +39,11 @@ def start():
         url = str(input("Paste playlist: "))
         ydl.download((url,))
 
-    files = os.listdir(out)
-    print(files)
+    files = os.listdir(output_dir)
+    files = rename(files, out)
 
+    invalid_files = []
     for file in files:
-        invalid_files = []
-
-        old_name = file.strip().lower().split(' ')
-        new_name = '_'.join(old_name)
-        os.rename(file, new_name)
-
         ext = file.split(".")[-1]
         if ext in valid_formats and ext == fmt:
             pass
@@ -47,4 +51,4 @@ def start():
             invalid_files.append(file)
 
         if invalid_files:
-            convert_files(invalid_files)
+            convert_files(invalid_files, fmt)
