@@ -16,7 +16,7 @@ def start():
         else:
             print("Select a valid format. --list for options.")
 
-    output_dir = os.path.abspath(os.mkdir(f"./output/{datetime}"))
+    output_dir = os.path.abspath(str(os.mkdir(f"./output/{datetime}")))
 
     ydl_opts = {
             "format": "bestaudio",

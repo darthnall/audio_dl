@@ -1,4 +1,4 @@
-#!/Users/blakenall/Documents/projects/scripts/audio_dl/.venv/bin/python3
+#!/home/blake/Projects/scripts/audio_dl/.venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
