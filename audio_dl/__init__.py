@@ -1,21 +1,33 @@
 from __future__ import unicode_literals
 import youtube_dl
 import os
+import ffmpeg
 from time import strftime, localtime
-from .reformat import convert_files
+from pathlib import Path
 
-def rename(files, out):
+def convert_files(files, fmt):
     for file in files:
-        old_name = file.strip().lower().split(' ')
-        new_name = '_'.join(old_name)
-        os.rename(file, new_name)
-    return os.listdir(out)
+        ffmpeg.output(ffmpeg.input(file), file, format=fmt)
 
+def rename_files(files):
+    for file in files:
+        new_name = "_".join(file.strip().lower().split(' '))
+        os.rename(file, new_name)
+    return os.listdir(".")
+
+# TODO: optimize this function
+def mkoutput():
+    os.chdir(Path("./output"))
+    time = strftime("%Y%M%D-$H$M$S", localtime())
+    os.mkdir(time)
+    output_path = Path(time)
+    output_str = os.fspath(output_path)
+    print(output_path, output_str)
+    return output_path, output_str
 
 def start():
     valid_formats = ["m4a", "mp4", "mp3", "ogg", "wav", "webm"]
-    out = os.open("./output", os.O_RDONLY)
-    print(out)
+    output = mkoutput()
     while True:
         fmt = input(f"Valid formats: {valid_formats}\nFormat: ")
         if fmt in valid_formats:
@@ -23,12 +35,8 @@ def start():
         else:
             print("Please select a valid format.")
 
-    time = strftime("%Y%M%D-$H$M$S", localtime())
-    output_dir = os.mkdir(f"{time}", dir_fd=out)
-
     ydl_opts = {
             "format": f"bestaudio[ext={fmt}]/bestaudio/m4a",
-            "outtmpl": output_dir,
             "postprocessors": [{
                 "key": "FFmpegExtractAudio",
                 "preferredquality": "192",
@@ -39,8 +47,7 @@ def start():
         url = str(input("Paste playlist: "))
         ydl.download((url,))
 
-    files = os.listdir(output_dir)
-    files = rename(files, out)
+    files = rename_files(output)
 
     invalid_files = []
     for file in files:
