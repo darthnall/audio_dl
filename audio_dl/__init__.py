@@ -18,20 +18,19 @@ def start():
     output_dir = os.mkdir(f"{time}", dir_fd=out)
 
     ydl_opts = {
-            "format": "bestaudio",
-            "output": output_dir,
+            "format": f"bestaudio[ext={fmt}]/bestaudio/m4a",
+            "outtmpl": output_dir
             "postprocessors": [{
                 "key": "FFmpegExtractAudio",
-                "preferredcodec": fmt,
                 "preferredquality": "192",
                 }],
             }
-
-    #with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-    #    url = str(input("Paste playlist: "))
-    #    ydl.download((url,))
-
-    files = os.listdir(output_dir)
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        url = str(input("Paste playlist:\n"))
+        try:
+            ydl.download((url,))
+        except youtube_dl.DownloadError:
+            print("Something went wrong.")
 
     for file in files:
         invalid_files = []
