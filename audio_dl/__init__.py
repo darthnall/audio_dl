@@ -27,11 +27,11 @@ def start():
                 }],
             }
 
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        url = str(input("Paste playlist: "))
-        ydl.download((url,))
+    #with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+    #    url = str(input("Paste playlist: "))
+    #    ydl.download((url,))
 
-    files = os.listdir(f"./output/{output_dir}")
+    files = os.listdir(output_dir)
 
     for file in files:
         invalid_files = []
