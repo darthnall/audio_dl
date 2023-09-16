@@ -1,8 +1,6 @@
 from __future__ import unicode_literals
 import youtube_dl
-from .handlers import ydl_init
-from .handlers import progress_hooks
-from .handlers import rename_file
+from .handlers import ydl_init, clean_up
 
 def start():
     valid_formats = ["m4a", "mp4", "mp3", "ogg", "wav", "webm"]
@@ -18,8 +16,7 @@ def start():
 
     ydl_opts = {
             "format": f"bestaudio[ext={fmt}]/bestaudio/m4a",
-            "outmmpl": f".{output_dir}/%(title)s%(ext)s",
-            "progress_hooks": [progress_hooks],
+            "outmmpl": f"./{output_dir}/%(title)s%(ext)s",
             "postprocessors": [{
                 "key": "FFmpegExtractAudio",
                 "preferredquality": "192",
@@ -28,3 +25,4 @@ def start():
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download((str(input("Paste playlist: "),)))
+        clean_up(output_dir)

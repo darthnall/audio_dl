@@ -7,13 +7,12 @@ def ydl_init():
     output_dir = os.fspath(time)
     return output_dir
 
-def progress_hooks(p, file):
-    if p["status"] == "downloading":
-        pass
-    if p["status"] == "finished":
-        rename_file(file)
-
 def rename_file(file):
     new_name = "_".join(file.strip().lower().split(' '))
     os.rename(file, new_name)
     return new_name
+
+def clean_up(output_dir):
+    files = os.listdir(output_dir)
+    for file in files:
+        rename_file(file)
