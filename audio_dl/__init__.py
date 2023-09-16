@@ -1,9 +1,10 @@
 from __future__ import unicode_literals
 import youtube_dl
-from .handlers import ydl_init, clean_up
+from .handlers import ydl_init
+from .handlers import clean_up
+from .handlers import valid_formats
 
 def start():
-    valid_formats = ["m4a", "mp4", "mp3", "ogg", "wav", "webm"]
 
     while True:
         fmt = input(f"Valid formats: {valid_formats}\nFormat: ")
@@ -25,4 +26,4 @@ def start():
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download((str(input("Paste playlist: "),)))
-        clean_up(output_dir)
+        clean_up(output_dir, fmt=fmt)
