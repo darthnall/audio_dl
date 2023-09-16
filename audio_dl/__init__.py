@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 import youtube_dl
-from .handlers import ydl_init
+from .handlers import make_output_dir
 from .handlers import clean_up
 from .handlers import valid_formats
 
@@ -13,11 +13,11 @@ def start():
         else:
             print("Please select a valid format.")
 
-    output_dir = ydl_init()
+    output_dir = make_output_dir()
 
     ydl_opts = {
             "format": f"bestaudio[ext={fmt}]/bestaudio/m4a",
-            "outmmpl": f"./{output_dir}/%(title)s%(ext)s",
+            "outmmpl": "%(title)s",
             "postprocessors": [{
                 "key": "FFmpegExtractAudio",
                 "preferredquality": "192",
@@ -25,5 +25,7 @@ def start():
     }
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download((str(input("Paste playlist: "),)))
-        clean_up(output_dir, fmt=fmt)
+        url = str(input("Paste playlist: "))
+        ydl.download((url,))
+
+    clean_up(output_dir, fmt=fmt)
